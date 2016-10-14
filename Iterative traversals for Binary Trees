@@ -1,0 +1,161 @@
+Knowledge of tree traversals is very important in order to completely understand Binary Trees. Though the recursive implementation of tree traversals, can be coded very neatly but recursion is generally not preferred. Excessive recursive function calls may cause memory to run out of stack space.
+
+Since the depth of a balanced binary search tree is about lg(n), we need not worry about running out of stack space, even if there are a million elements in the tree. But alas perfectly balanced trees, come at their own cost. Rather efficient height balanced trees is still an active area of interest. So it is quite possible in practical scenarios that the tree may not be balanced. If that is the scenario then we are asking for trouble using recursion, because in the worst case the height of the tree may go up to n and in this case, the stack space will eventually run out and the program will crash.
+
+Iterative tree traversals can be coded easily, using a _ visited _ flag. This has been sufficiently explained at this wiki page . But this requires us to change the structure of the tree, and we would not want that. Here we will attempt to develop iterative traversals, without modifying the structure.
+
+Understanding the below given iterative traversals can be a little tricky so the best way to understand them is to work them out on a piece of paper. Use this sample binary tree and follow the steps of the below given codes.
+
+BinaryTree
+
+In Order Traversal:
+
+The in order traversal requires that we print the leftmost node first and the right most node at the end. So basically for each node we need to go as far as down and left as possible and then we need to come back and go right. Steps of algorithm are:
+
+> 1. Start with the node equals root
+
+> 2. Store the node in the stack and visit it's left child.
+
+> 3. Repeat step 2 while node is not NULL, if it's NULL then pop it's parent (i.e. the last node in stack) and print it.
+
+> 4. Now move to node's right child and repeat step 1
+
+> 5. Repeat whole procedure while node is not NULL and stack is not empty
+
+Inorder(Tree *p)
+{
+    stack &lt; Tree* &gt; S;
+    do
+    { 
+        while (p!=NULL)                      
+        { 
+            // store a node in the stack and visit it's left child
+            S.push(p);
+            p=p-&gt;left; 
+        }
+
+        // If there are nodes in the stack to which we can move up
+        // then pop it
+        if (!S.empty())
+        { 
+            p=S.top();
+            S.pop();
+
+            // print the nodes value
+            cout &lt;&lt; p-&gt;ele &lt;&lt; "-";
+
+            // vistit the right child now
+            p=p-&gt;right; 
+        }
+
+    // while the stack is not empty or there is a valid node
+    }while(!S.empty()||p!=NULL);
+}
+Food for Thought: The above given iterative solution makes use of explicit stack. We have only managed to eliminate the recursion, but not the extra space requirement. Can there be another way in which we can give an in-order traversal without using a stack?
+
+Yes! you can do that and there are two methods. But both of them require to change the tree structure as we generally us it.
+
+> * One is pretty intuitive, and that is to have a parent pointer, in addition to the child pointer. This eliminates the need for extra space, because the whole purpose of using a stack was to save the parent nodes.
+
+> * The second is not so intuitive, but a very popular data structure and that is Threaded Binary Tree . This along with the normal structure, also stores a pointer to the next in-order successor of a node. In case there is a right child then the in-order successor is the child otherwise it is one of the successors.
+
+Threaded Binary Tree
+
+Pre Order Traversal:
+
+Pre order is very similar to in order traversal. The way of accessing all the nodes remains the same except the position where we print the node. Now the node is printed/visited before visiting the children of the nodes. Steps are very similar to in-order
+
+> 1. Start with node equal to root node
+
+> 2. Store the node in the stack, print it and visit it's left child.
+
+> 3. Repeat step 2 while node is not NULL, if it's NULL then pop it's parent (i.e. the last node in stack).
+
+> 4. Now move to node's right child and repeat step 2
+
+> 5. Repeat whole procedure while node is not NULL and stack is not empty
+
+  Preorder(Tree *p)    
+{ 
+    stack &lt; Tree* &gt; S;
+    do
+    {     
+        while (p!=NULL)
+        { 
+            // storea node in stack and print it's value
+            S.push(p);
+            cout &lt;&lt; p-&gt;ele &lt;&lt; "-";
+            // visit the left child
+            p = p-&gt;left; 
+        }
+
+        // visit the right child
+        if (!S.empty())
+        {
+            p=S.top();
+            S.pop();
+            p = p-&gt;right; 
+        }
+
+    } while(!S.empty()||p!=NULL);
+}
+Post Order Traversal:
+
+Post order traversal is the trickiest one, out of all the three traversals. However post order traversal is important to understand because of the following 2 use cases
+
+> * Tree deletion: In order to free up allocated memory of all nodes in a tree, the nodes must be deleted in the order where the current node is deleted when both of its left and right sub-trees are deleted. This can be done using post-order traversal only.
+
+> * It is also used in evaluating Post-fix or Reverse Polish Notation.
+
+The problem with post-order traversal is that in the previous two cases when a node was popped of from the stack, then it was finally removed and was not accessed again. However in case of post-order the node needs to be accessed from the stack twice, and is deleted only in the second access.
+
+First time we find a node, we push it on to the stack, the second time we examine it from the stack to go to it's right child and then finally after visiting both the right sub-tree and the left-subtree we remove the node from the stack. So a node stays in the stack as long as it's sub-trees have not been visited.
+
+> Since, a node has to be visited(printed in the trivial case) only after it's left and right child have been visited, we print a node's value after we have visited the left child followed by the right child. The property that is exploited in this implementation is that the the parent node will always be visited just after visiting it's right child.
+
+After visiting the left child, when we come to the parent node in the stack if the right child is NULL, then we can straight away print the node, but if it's not NULL then we have to check whether the previous node which was printed is it's right child. If it's the right child then we can visit the current node, otherwise the right child has not been visited and we must proceed with the right child.
+
+Hence in this traversal, we have to use a previous pointer, only then will we able to correctly traverse the node. Otherwise we do not know when the right child has been visited or not.
+
+> 1. Start with the root node.
+
+> 2. Store the node in the stack, and visit it's left child.
+
+> 3. Repeat step 1 while node is not NULL, if it's NULL:
+
+> * Pick the top most node from the stack.
+
+> * If it's right child is NULL, then print the node and set prev pointer to this node
+
+> * If it's not NULL, check whether the right child is equal to prev pointer, if it is then print the node, else repeat step 1 with the right child
+
+> * In this step, if you print the node then current is made equal to NULL and this sub-loop is repeated untill stack is not empty and current is NULL
+
+> 4. Since the root node remains in the stack till the end, the terminating condition is untill stack is empty
+
+Postorder(Tree *p) 
+{
+    stack &lt; Tree* &gt; S;
+    Tree *prev = NULL;
+    do
+    { 
+        while (p!=NULL)
+        { 
+            S.push(p);
+            p = p-&gt;left;
+        }
+        while(p == NULL &amp;&amp; !S.empty())
+        {
+            p = S.top();
+            if(p-&gt;right == NULL || p-&gt;right == prev)
+            {
+                cout &lt;&lt; p-&gt;ele &lt;&lt; "-";
+                S.pop();
+                prev = p;
+                p = NULL;
+            }
+            else
+                p = p-&gt;right;
+        }
+    }while(!S.empty());
+}
