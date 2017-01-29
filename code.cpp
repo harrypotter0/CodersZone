@@ -1,31 +1,60 @@
-#include<bits/stdc++.h>
-using namespace std;
-int search (int ma[4][4],int n,int m)
+#include <stdio.h>
+#define R 3
+#define C 6
+
+void spiralPrint(int m, int n, int a[R][C])
 {
-   int i=0,j=n-1;
-   while(i<=n && j>=0){
-   if(ma[i][j] ==m)
-   {
-       cout<<"mil GYA"<<endl<<i+1<<" "<<j+1;
-       return 1;
-   }
-   if(ma[i][j]>m)
-   j--;
-   else
-   i++;
-   }
-   return 0;
+	int i, k = 0, l = 0;
+	while (k < m && l < n)
+	{
+		/* Print the first row from the remaining rows */
+		for (i = l; i < n; ++i)
+		{
+			printf("%d ", a[k][i]);
+		}
+		k++;
+
+		/* Print the last column from the remaining columns */
+		for (i = k; i < m; ++i)
+		{
+			printf("%d ", a[i][n-1]);
+		}
+		n--;
+
+		/* Print the last row from the remaining rows */
+		if ( k < m)
+		{
+			for (i = n-1; i >= l; --i)
+			{
+				printf("%d ", a[m-1][i]);
+			}
+			m--;
+		}
+
+		/* Print the first column from the remaining columns */
+		if (l < n)
+		{
+			for (i = m-1; i >= k; --i)
+			{
+				printf("%d ", a[i][l]);
+			}
+			l++; 
+		}	 
+	}
 }
+
+/* Driver program to test above functions */
 int main()
 {
-  int re;
-  int mat[4][4] = { {10, 20, 30, 40},
-                    {15, 25, 35, 45},
-                    {27, 29, 37, 48},
-                    {32, 33, 39, 50},
-                  };
-  re =search(mat, 4, 29);
-  if(re!=1)
-  cout<<"NAHI mila ";
-  return 0;
+	int a[R][C] = { {1, 2, 3, 4, 5, 6},
+		{7, 8, 9, 10, 11, 12},
+		{13, 14, 15, 16, 17, 18}
+	};
+
+	spiralPrint(R, C, a);
+	return 0;
 }
+
+/* OUTPUT:
+1 2 3 4 5 6 12 18 17 16 15 14 13 7 8 9 10 11
+*/
